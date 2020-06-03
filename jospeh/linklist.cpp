@@ -38,6 +38,93 @@ Status GetElem(Ring L, int pos, ElemType* e);
 Status ListInsert(Ring L, int pos, ElemType e);
 void ListTraverse(Ring L);
 
+#define N 1024
+//打开文件文件
+//获取文件行数
+//根据文件行数开辟指针
+//
+int GetFileLin(FILE* file)
+{
+	if (NULL == file)
+	{
+		return -1;
+	}
+
+	char buf[N] = { 0 };
+	int lin = 0;
+	//fgets 按行读取 ，成功读取字符串，读到文件末尾或出错NULL
+	while (fgets(buf, N, file) != NULL)
+	{
+		++lin;
+	}
+	//将光标移动到文件开始 否则下次读取该文件时会从文件末尾开始读
+	fseek(file, 0, SEEK_SET);
+	return lin;
+}
+
+
+void GetFile(FILE* file, char** pArr, int lin)
+{
+	if (NULL == file)
+	{
+		return;
+	}
+
+	if (NULL == pArr)
+	{
+		return;
+	}
+
+	if (lin <= 0)
+	{
+		return;
+	}
+	// 创建缓冲区
+	char buf[N] = { 0 };
+
+	int index = 0;
+
+	while (fgets(buf, N, file) != NULL)
+	{
+		//清空buf memset(buf, 0, 1024);
+		int lindate = strlen(buf) + 1;
+		//给当前行分配内存
+		char* plindate = (char*)malloc(sizeof(char) * lindate);
+
+		//将行数据拷贝到空间中
+		strcpy(plindate, buf);
+		pArr[index++] = plindate;
+		memset(buf, 0, N);
+	}
+}
+
+void fileshow(char** pArr, int len)
+{
+	for (int i = 0; i < len; ++i)
+	{
+		printf("%s", pArr[i]);
+	}
+}
+char** Reader()
+{
+	FILE* file = fopen("D:\\Ccode\\jospeh\\peopledata.txt", "r");
+	if (file == NULL)
+	{
+		printf("文件打开失败！");
+		return NULL;
+	}
+	//统计文件行数
+	int lin = GetFileLin(file);
+	//开辟指针数组分别指向数据
+	char** pArr = (char**)malloc(sizeof(char*) * lin);
+	GetFile(file, pArr, lin);
+	//char pp[N] = "cccccccccc";
+	//serfile(pArr, lin, pp);
+	fileshow(pArr, lin);
+	printf("%d", lin);
+	fclose(file);
+	return pArr;
+}
 // L指向尾结点
 Ring InitList()
 {
@@ -202,6 +289,8 @@ int main(void)
 	//Person qq ;
 	//ListDelete(jospeh, 1,&qq);
 	//printf("%s", qq.name);
+	char** sss;
+	sss=Reader();
 	FreeSpace(jospeh);
 
 	system("pause");
