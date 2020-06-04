@@ -24,6 +24,22 @@ typedef struct Ring
 #define MAXLENGTH 150
 #define NAMELENRGTH 12
 
+Ring* init_ring(Ring* ring);
+int get_file_line(FILE* file);
+void get_file(FILE* file, char** pArr, int lin);
+void file_show(char** pArr, int len);
+int char_to_int(char* str);
+Person** get_data(char** pArr, int len);
+Person** reader();
+struct Ring* create_jospeh(Person** reader);
+Ring* from_reader();
+void append(Person person, Ring* ring);
+bool is_empty(Ring* ring);
+void show_ring(Ring* ring);
+void pop(Ring* ring, int pos);
+void next(Ring* ring);
+void reset(Ring* ring, int location, int step);
+
 int get_file_line(FILE* file)
 {
 	if (NULL == file)
@@ -156,16 +172,12 @@ struct Ring* create_jospeh(Person** reader)
 	for (int i = 0; i < 10; ++i)
 	{
 		temp[i] = malloc(sizeof(struct Person));
-
 		temp[i]->name = malloc(sizeof(char) * 12);
 		memset(temp[i]->name, 0, 12);
 		strcpy(temp[i]->name, reader[i]->name);
 		ring->length++;
-		
-
 		temp[i]->age = reader[i]->age;
 	}
-
 	return ring;
 }
 
@@ -176,7 +188,6 @@ Ring*  from_reader()
 	readerdata = reader();
 	ring =create_jospeh(readerdata);
 	return ring;
-
 }
 
 void append(Person person, Ring* ring)
@@ -188,7 +199,6 @@ void append(Person person, Ring* ring)
 	strcpy(ring->person[len]->name, person.name);
 	ring->person[len]->age = person.age;
 	ring->length++;
-
 }
 
 bool is_empty(Ring* ring)
