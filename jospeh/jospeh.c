@@ -27,18 +27,18 @@ typedef struct Ring
 Ring* init_ring(Ring* ring);
 int get_file_line(FILE* file);
 void get_file(FILE* file, char** pArr, int lin);
-void file_show(char** pArr, int len);
+void file_show(const char** pArr, int len);
 int char_to_int(char* str);
 Person** get_data(char** pArr, int len);
 Person** reader();
 struct Ring* create_jospeh(Person** reader);
 Ring* from_reader();
 void append(Person person, Ring* ring);
-bool is_empty(Ring* ring);
-void show_ring(Ring* ring);
+bool is_empty(const Ring* ring);
+void show_ring(const Ring* ring);
 void pop(Ring* ring, int pos);
 void next(Ring* ring);
-void reset(Ring* ring, int location, int step);
+void reset(Ring* ring, int location, int step); 
 
 int get_file_line(FILE* file)
 {
@@ -93,7 +93,7 @@ void get_file(FILE* file, char** pArr, int lin)
 	}
 }
 
-void file_show(char** pArr, int len)
+void file_show(const char** pArr, int len)
 {
 	for (int i = 0; i < len; ++i)
 	{
@@ -172,8 +172,8 @@ struct Ring* create_jospeh(Person** reader)
 	for (int i = 0; i < 10; ++i)
 	{
 		temp[i] = malloc(sizeof(struct Person));
-		temp[i]->name = malloc(sizeof(char) * 12);
-		memset(temp[i]->name, 0, 12);
+		temp[i]->name = malloc(sizeof(char) * NAMELENRGTH);
+		memset(temp[i]->name, 0, NAMELENRGTH);
 		strcpy(temp[i]->name, reader[i]->name);
 		ring->length++;
 		temp[i]->age = reader[i]->age;
@@ -201,7 +201,7 @@ void append(Person person, Ring* ring)
 	ring->length++;
 }
 
-bool is_empty(Ring* ring)
+bool is_empty(const Ring* ring)
 {
 	if (ring->length == 0)
 	{
@@ -213,7 +213,7 @@ bool is_empty(Ring* ring)
 	}
 }
 
-void show_ring(Ring* ring)
+void show_ring(const Ring* ring)
 {
 	for (int i = 0; i < ring->length; i++)
 	{
@@ -226,22 +226,24 @@ void pop(Ring* ring, int pos)
 {
 	printf("%s", ring->person[pos]->name);
 
-	if (ring->length == pos)
+	if (ring->length-1 == pos)
 	{
-		free(ring->person[pos - 1]->name);
-		ring->person[pos - 1]->name = NULL;
-		free(ring->person[pos - 1]);
-		ring->person[pos - 1] = NULL;
+		free(ring->person[pos]->name);
+		ring->person[pos]->name = NULL;
+		free(ring->person[pos]);
+		ring->person[pos] = NULL;
 		ring->length--;
 	}
 
-	if (ring->length > pos)
+	else if (ring->length-1 > pos)
 	{
 		for (int i = pos; i < ring->length - 1; i++)
 		{
-			strcpy(ring->person[i]->name, ring->person[i + 1]->name);
+			strcpy(ring->person[i]->name, ring->person[i+1]->name);
 			ring->person[i]->age = ring->person[i + 1]->age;
 		}
+		free(ring->person[ring->length - 1]->name);
+		ring->person[ring->length - 1]->name = NULL;
 		free(ring->person[ring->length - 1]);
 		ring->person[ring->length - 1] = NULL;
 		ring->length--;
@@ -253,9 +255,10 @@ void next(Ring* ring)
 	int size = ring->length;
 	int location = ring->location;
 	int step = ring->step;
-	int id = (ring->id+(location - 1)) % size;
-	ring->id += step - 1;
-	pop(ring, id);
+	ring->id = ((ring->id+(step - 1))) % size;
+	pop(ring, ring->id);
+	//ring->id += (step - 1);
+	
 
 }
 
