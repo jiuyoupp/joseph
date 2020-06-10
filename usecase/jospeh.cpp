@@ -4,15 +4,16 @@
 
 struct Ring* create_jospeh(Person** reader)
 {
-	struct Person** temp = (struct Person**) malloc(sizeof(struct Person*) * MAXLENGTH);
-	struct Ring *ring= (struct Ring*)malloc(sizeof(struct Ring));
+	Ring* ring=NULL;
+	struct Person** temp = (Person**) malloc(sizeof(struct Person*) * MAXLENGTH);
+	ring = init_ring();
 	ring->person = temp;
 	ring->length = 0;
 
 	for (int i = 0; i < 10; ++i)
 	{
-		temp[i] = (struct Person *)malloc(sizeof(struct Person));
-		temp[i]->name = (char *)malloc(sizeof(char) * NAMELENRGTH);
+		temp[i] = (Person *)malloc(sizeof(struct Person));
+		temp[i]->name = (char*)malloc(sizeof(char) * NAMELENRGTH);
 		memset(temp[i]->name, 0, NAMELENRGTH);
 		strcpy(temp[i]->name, reader[i]->name);
 		ring->length++;
@@ -58,36 +59,33 @@ void show_ring(const Ring* ring)
 	for (int i = 0; i < ring->length; i++)
 	{
 		printf("%s", ring->person[i]->name);
-		printf("%s", ring->person[i]->age);
+		printf("%d", ring->person[i]->age);
 	}
+}
+
+void popspace(Ring* ring, int pos)
+{
+
+
 }
 
 void pop(Ring* ring, int pos)
 {
 	printf("%s\n", ring->person[pos]->name);
 
-	if (ring->length-1 == pos)
-	{
-		free(ring->person[pos]->name);
-		ring->person[pos]->name = NULL;
-		free(ring->person[pos]);
-		ring->person[pos] = NULL;
-		ring->length--;
-	}
-
-	else if (ring->length-1 > pos)
-	{
-		for (int i = pos; i < ring->length - 1; i++)
+	 if (ring->length-1 >= pos)
 		{
-			strcpy(ring->person[i]->name, ring->person[i+1]->name);
-			ring->person[i]->age = ring->person[i + 1]->age;
+			for (int i = pos; i < ring->length - 1; i++)
+			{
+				strcpy(ring->person[i]->name, ring->person[i+1]->name);
+				ring->person[i]->age = ring->person[i + 1]->age;
+			}
+			free(ring->person[ring->length - 1]->name);
+			ring->person[ring->length - 1]->name = NULL;
+			free(ring->person[ring->length - 1]);
+			ring->person[ring->length - 1] = NULL;
+			ring->length--;
 		}
-		free(ring->person[ring->length - 1]->name);
-		ring->person[ring->length - 1]->name = NULL;
-		free(ring->person[ring->length - 1]);
-		ring->person[ring->length - 1] = NULL;
-		ring->length--;
-	}
 }
 
 void next(Ring* ring)
@@ -97,7 +95,7 @@ void next(Ring* ring)
 	int step = ring->step;
 	ring->id = ((ring->id+(step - 1))) % size;
 	pop(ring, ring->id);
-	//ring->id += (step - 1);
+	
 	
 
 }
@@ -111,8 +109,9 @@ void reset(Ring* ring,int location,int step)
 }
 
 
-Ring* init_ring(Ring* ring)
+Ring* init_ring()
 {
+	struct Ring* ring = (Ring*)malloc(sizeof(struct Ring));
 	ring->person = NULL;
 	ring->length = 0;
 	ring->location = 0;
@@ -121,5 +120,44 @@ Ring* init_ring(Ring* ring)
 	return ring;
 }
 
+void free_jospeh(Ring* ring)
+{
+	int length = ring->length;
+	if (NULL == ring)
+	{
+		return;
+	}
+	if (ring->person == NULL)
+	{
+		free(ring);
+		ring = NULL;
+		return;
+	}
+	printf("%d\n",ring->length);
+	if (ring->person != NULL)
+	{
+		for (int i = 0; i < length; i++)
+		{
+			if (ring->person[i] == NULL)
+			{
+				continue;
+			}
 
+			if (ring->person[i]->name != NULL)
+			{
+				printf("Name:%s的内存被释放!\n", ring->person[i]->name);
+				free(ring->person[i]->name);
+				ring->person[i]->name = NULL;
+			}
+
+			ring->length--;
+			free(ring->person[i]);
+			ring->person[i] = NULL;
+		}
+	}
+
+	free(ring);
+	ring = NULL;
+
+}
 

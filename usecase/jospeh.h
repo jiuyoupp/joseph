@@ -13,7 +13,7 @@ typedef struct Ring
 
 }Ring;
 
-Ring* init_ring(Ring* ring);
+Ring* init_ring();
 struct Ring* create_jospeh(Person** reader);
 Ring* from_reader();
 void append(Person person, Ring* ring);
@@ -22,5 +22,6 @@ void show_ring(const Ring* ring);
 void pop(Ring* ring, int pos);
 void next(Ring* ring);
 void reset(Ring* ring, int location, int step);
+void free_jospeh(Ring* ring);
 
 #endif
