@@ -4,21 +4,22 @@
 int main()
 {
 	Ring* ring = NULL;
-	ring = from_reader();
+	const char* path = "D:\\Ccode\\jospeh\\peopledata.txt";
+	ring = create_jospeh(path);
 	Person * outsequence=NULL;
 	reset(ring, 3, 3);
-	/*next(ring);
 	next(ring);
 	next(ring);
 	next(ring);
 	next(ring);
 	next(ring);
 	next(ring);
-	next(ring);
-	next(ring);
-	next(ring);*/
+	//next(ring);
+	//next(ring);
+	//next(ring);
+	//next(ring);
 	printf("finish\n");
-	free_jospeh(ring);
+	clear_jospeh(ring);
 	system("pause");
 	return EXIT_SUCCESS;
 }

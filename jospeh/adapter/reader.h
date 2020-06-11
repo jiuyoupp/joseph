@@ -13,10 +13,10 @@
 
 int get_file_line(FILE* file);
 void get_file(FILE* file, char** pArr, int lin);
-void file_show(const char** pArr, int len);
 void char_to_int(char* str,int* age);
 Person** data_to_reader(char** pArr, int len);
-Person** reader();
-void freefileSpace(char** parr, int lin);
+Person** reader(int* lenth, const char* path);
+void free_file_space(char** parr, int lin);
+void free_reader(Person** people, int lin);
 
 #endif

@@ -21,14 +21,20 @@ int get_file_line(FILE* file)
 	return lin;
 }
 
-void get_file(FILE* file, char** pArr, int lin)
+void get_file(FILE* file, char** parr, int lin)
 {
+	// 创建缓冲区
+	char buf[N] = { 0 };
+	int index = 0;
+	int lindata = 0;
+	//给当前行分配内存
+
 	if (NULL == file)
 	{
 		return;
 	}
 
-	if (NULL == pArr)
+	if (NULL == parr)
 	{
 		return;
 	}
@@ -37,52 +43,41 @@ void get_file(FILE* file, char** pArr, int lin)
 	{
 		return;
 	}
-	// 创建缓冲区
-	char buf[N] = { 0 };
-	int index = 0;
 
 	while (fgets(buf, N, file) != NULL)
 	{
-		//清空buf memset(buf, 0, 1024);
-		int lindate = strlen(buf) + 1;
+		lindata = strlen(buf) + 1;
 		//给当前行分配内存
-		char* plindate = (char*)malloc(sizeof(char) * lindate);
+		parr[index] = (char*)malloc(sizeof(char) * lindata);
 		//将行数据拷贝到空间中
-		strcpy(plindate, buf);
-		pArr[index++] = plindate;
+		strcpy(parr[index], buf);
+		index++;
 		memset(buf, 0, N);
+		lindata = 0;
 	}
 }
 
-void file_show(const char** pArr, int len)
-{
-	for (int i = 0; i < len; ++i)
-	{
-		printf("%s", pArr[i]);
-	}
-}
-
-int char_to_int(char* str)
+void char_to_int(char* str, int* age)
 {
 	int i = 0;
+	char strage[6];
 	while (*str != '\n')
 	{
-		if (i == 0)
-		{
-			i += (int)(*str - '0');
-			str++;
-		}
-		else
-		{
-			i = i * 10 + (int)((*str) - '0');
-			str++;
-		}
-	}
-	return i;
 
+		strage[i] = *str;
+		i++;
+		str++;
+	}
+	sscanf(strage, "%d", age);
 }
-Person** get_data(char** pArr, int len)
+
+Person** data_to_reader(char** parr, int len)
 {
+	if (NULL == parr)
+	{
+		return NULL;
+	}
+
 	Person** reader = (Person**)malloc(sizeof(Person*) * len);
 
 	int age = 0;
@@ -91,34 +86,86 @@ Person** get_data(char** pArr, int len)
 
 		char* token;
 		reader[i] = (Person*)malloc(sizeof(Person));
-		reader[i]->name = (char*)malloc(sizeof(char) * NAMELENRGTH + 1);
-		token = strtok(*(pArr + i), " ");
+		reader[i]->name = (char*)malloc(sizeof(char) * NAMELENRGTH );
+		token = strtok(*(parr + i), " ");
 		strcpy(reader[i]->name, token);
 		token = strtok(NULL, "\0");
-		age = char_to_int(token);
+		char_to_int(token, &age);
 		reader[i]->age = age;
 
 	}
+
 	return reader;
 }
-Person** reader()
+
+Person** reader(int* length,const char* path)
 {
-	FILE* file = fopen("D:\\Ccode\\jospeh\\peopledata.txt", "r");
-	if (file == NULL)
+	FILE* file = fopen(path, "r");
+
+	if (NULL == file )
 	{
 		printf("文件打开失败！");
 		return NULL;
 	}
-	//统计文件行数
 
 	int lin = get_file_line(file);
-	//开辟指针数组分别指向数据
-	char** pArr = (char**)malloc(sizeof(char*) * lin);
-	memset(pArr, 0, lin);
-	get_file(file, pArr, lin);
-	Person** reader;
-	reader = get_data(pArr, lin);
-	//file_show(pArr, lin);
+	char** parr = (char**)malloc(sizeof(char*) * lin);
+	memset(parr, 0, lin);
+	get_file(file, parr, lin);
+	Person** reader = NULL;
+	reader = data_to_reader(parr, lin);
 	fclose(file);
+	*length = lin;
+	free_file_space(parr, lin);
 	return reader;
+}
+
+void free_file_space(char ** parr,int lin)
+{
+
+	if (NULL == parr)
+	{
+		return;
+	}
+
+	for (int i = 0; i < lin; ++i)
+	{
+
+		if (parr[i] != NULL)
+		{
+			free(parr[i]);
+			parr[i] = NULL;
+		}
+	}
+
+	free(parr);
+	parr = NULL;
+}
+
+void free_reader(Person** people,int lin)
+{
+	if (NULL == people)
+	{
+		return;
+	}
+
+	for (int i = 0; i < lin; ++i)
+	{
+		if (people[i] == NULL)
+		{
+			continue;
+		}
+
+		if (people[i]->name != NULL)
+		{
+			printf("Name:%s的内存被释放!\n", people[i]->name);
+			free(people[i]->name);
+			people[i]->name = NULL;
+		}
+		free(people[i]);
+		people[i] = NULL;
+	}
+
+	free(people);
+	people = NULL;
 }

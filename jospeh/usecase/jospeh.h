@@ -5,23 +5,26 @@
 
 typedef struct Ring
 {
-	Person** person;
+	Person** people;
+	Person** temppeople;
 	int length;
+	int templength;
 	int step;
 	int location;
 	int id;
 
 }Ring;
 
+Person** copy_people(Person** peopledata, int lin);
 Ring* init_ring();
-struct Ring* create_jospeh(Person** reader);
-Ring* from_reader();
+struct Ring* from_reader(Person** reader,int lin);
+Ring* create_jospeh(const char* path);
 void append(Person person, Ring* ring);
 bool is_empty(const Ring* ring);
 void show_ring(const Ring* ring);
 void pop(Ring* ring, int pos);
 void next(Ring* ring);
 void reset(Ring* ring, int location, int step);
-void free_jospeh(Ring* ring);
-
+void free_people(Person** people, int lin);
+void clear_jospeh(Ring* ring);
 #endif
